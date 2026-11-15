@@ -53,10 +53,25 @@ CREATE TABLE IF NOT EXISTS layer_summary (
   FOREIGN KEY(domain_id) REFERENCES domains(id)
 );
 
+-- 旁路汇总表：业务日+门店+品类，独立于主汇总层；主路径禁止写入，对账禁止读取
+CREATE TABLE IF NOT EXISTS layer_summary_category (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  domain_id INTEGER NOT NULL,
+  biz_day TEXT NOT NULL,
+  store_code TEXT NOT NULL,
+  category TEXT NOT NULL,
+  amount_sum REAL NOT NULL,
+  qty_sum INTEGER NOT NULL,
+  line_count INTEGER NOT NULL,
+  UNIQUE(domain_id, biz_day, store_code, category),
+  FOREIGN KEY(domain_id) REFERENCES domains(id)
+);
+
 CREATE TABLE IF NOT EXISTS layer_jobs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   domain_id INTEGER NOT NULL,
   step TEXT NOT NULL,
+  lane TEXT NOT NULL DEFAULT '主路径',
   status TEXT NOT NULL,
   message TEXT NOT NULL DEFAULT '',
   in_count INTEGER NOT NULL DEFAULT 0,
@@ -82,10 +97,20 @@ CREATE TABLE IF NOT EXISTS reconcile_reports (
 """
 
 
+def _migrate(conn) -> None:
+    """对旧版本库做幂等补齐，不改动既有数据。"""
+    cols = {r["name"] for r in conn.execute("PRAGMA table_info(layer_jobs)").fetchall()}
+    if "lane" not in cols:
+        conn.execute(
+            "ALTER TABLE layer_jobs ADD COLUMN lane TEXT NOT NULL DEFAULT '主路径'"
+        )
+
+
 def init_db() -> None:
     conn = connect()
     try:
         conn.executescript(SCHEMA)
+        _migrate(conn)
         row = conn.execute("SELECT COUNT(*) AS c FROM domains").fetchone()
         if int(row["c"]) == 0:
             _seed_domain(conn)

@@ -15,8 +15,10 @@ onMounted(async () => {
 </script>
 <template>
   <div>
-    <h2>汇总层</h2>
-    <p class="lead">按业务日与门店编码聚合后的汇总表。</p>
+    <h2>汇总层 <span class="lane-tag lane-main">主路径</span></h2>
+    <p class="lead">
+      主汇总表，粒度锁定为业务日+门店编码（不含品类维），是层间对账的唯一汇总来源。
+    </p>
     <p v-if="err" class="err">{{ err }}</p>
     <div class="panel">
       <table>

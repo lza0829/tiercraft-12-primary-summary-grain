@@ -13,6 +13,7 @@
         <router-link to="/paste">贴源层</router-link>
         <router-link to="/detail">明细层</router-link>
         <router-link to="/summary">汇总层</router-link>
+        <router-link to="/category-summary">品类旁路</router-link>
         <router-link to="/jobs">分层任务</router-link>
         <router-link to="/reconcile">层间对账</router-link>
       </nav>

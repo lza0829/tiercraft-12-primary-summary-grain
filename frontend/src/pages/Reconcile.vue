@@ -38,7 +38,10 @@ async function run() {
 <template>
   <div>
     <h2>层间对账</h2>
-    <p class="lead">核对明细行数与汇总行数合计、金额是否一致。</p>
+    <p class="lead">
+      对账只核主汇总层（业务日+门店编码）与明细层的行数、金额；品类旁路表不是对账对象，
+      旁路任务失败时本对账仍只依据主汇总判定，可正常得出「一致」。
+    </p>
     <div class="toolbar">
       <label>
         主题域
@@ -56,6 +59,7 @@ async function run() {
       </h3>
       <table>
         <tbody>
+          <tr><th>对账范围</th><td>{{ r.detail.对账范围 }}</td></tr>
           <tr><th>贴源行数</th><td>{{ r.detail.贴源行数 }}</td></tr>
           <tr><th>明细行数</th><td>{{ r.detail.明细行数 }}</td></tr>
           <tr><th>汇总行数合计</th><td>{{ r.detail.汇总行数合计 }}</td></tr>

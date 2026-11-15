@@ -12,11 +12,19 @@ def counts(domain_id: int | None = Query(default=None)):
 
 @router.get("/layers/{layer}")
 def list_layer(layer: str, domain_id: int | None = Query(default=None)):
-    mapping = {"paste": "paste", "detail": "detail", "summary": "summary",
-               "贴源": "paste", "明细": "detail", "汇总": "summary"}
+    mapping = {
+        "paste": "paste",
+        "detail": "detail",
+        "summary": "summary",
+        "category_summary": "category_summary",
+        "贴源": "paste",
+        "明细": "detail",
+        "汇总": "summary",
+        "品类旁路": "category_summary",
+    }
     key = mapping.get(layer)
     if not key:
-        raise HTTPException(status_code=400, detail="分层只能是贴源/明细/汇总")
+        raise HTTPException(status_code=400, detail="分层只能是贴源/明细/汇总/品类旁路")
     try:
         return pipeline.layer_rows(key, domain_id)
     except ValueError as exc:
